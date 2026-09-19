@@ -1,0 +1,11 @@
+services:
+  tts-bot:
+    build: .
+    container_name: discord_translator_bot
+    restart: unless-stopped
+    network_mode: host
+    # タイムゾーンを日本に設定（ログが見やすくなる）
+    environment:
+      - TZ=Asia/Tokyo
+      - DISCORD_TOKEN=${DISCORD_TOKEN}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
