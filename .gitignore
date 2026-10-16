@@ -5,3 +5,15 @@ __pycache__/
 
 *.mp3
 *.wav
+
+# Terraform local data, state, plans, and credentials/configuration
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+*.plan
+*.tfvars
+*.tfvars.json
+backend.hcl
+crash.log
+crash.*.log

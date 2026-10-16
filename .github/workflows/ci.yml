@@ -32,3 +32,28 @@ jobs:
 
     - name: Run Pytest
       run: pytest
+
+  terraform:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v5
+
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: 1.11.4
+
+    - name: Check Terraform formatting
+      working-directory: infra/terraform
+      run: terraform fmt -check -recursive
+
+    - name: Validate bootstrap configuration
+      run: |
+        terraform -chdir=infra/terraform/bootstrap init -backend=false -input=false
+        terraform -chdir=infra/terraform/bootstrap validate -no-color
+
+    - name: Validate application configuration
+      run: |
+        terraform -chdir=infra/terraform/app init -backend=false -input=false
+        terraform -chdir=infra/terraform/app validate -no-color

@@ -1,0 +1,2 @@
+aws_region       = "ap-northeast-1"
+state_bucket_name = "replace-with-a-globally-unique-name"

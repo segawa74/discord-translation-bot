@@ -1,0 +1,5 @@
+bucket       = "replace-with-the-bootstrap-state-bucket-name"
+key          = "discord-translation-bot/prod/terraform.tfstate"
+region       = "ap-northeast-1"
+encrypt      = true
+use_lockfile = true

@@ -1,3 +1,4 @@
+import math
 import os
 from typing import Dict, TypedDict
 
@@ -26,3 +27,17 @@ def get_gemini_api_key() -> str:
     if not key:
         raise ValueError("GEMINI_API_KEY environment variable is not set.")
     return key
+
+
+def get_shutdown_timeout() -> float:
+    raw_timeout = os.getenv("SHUTDOWN_TIMEOUT_SECONDS", "20")
+    try:
+        timeout = float(raw_timeout)
+    except ValueError as error:
+        raise ValueError(
+            "SHUTDOWN_TIMEOUT_SECONDS must be a positive number."
+        ) from error
+
+    if not math.isfinite(timeout) or timeout <= 0:
+        raise ValueError("SHUTDOWN_TIMEOUT_SECONDS must be a positive number.")
+    return timeout
