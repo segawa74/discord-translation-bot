@@ -75,6 +75,10 @@ resource "aws_security_group" "bot" {
   tags = {
     Name = "${local.service_name}-task"
   }
+
+  lifecycle {
+    ignore_changes = [egress]
+  }
 }
 
 resource "aws_vpc_security_group_egress_rule" "https" {
