@@ -14,9 +14,9 @@ RUN apt-get update && \
 
 WORKDIR /app
 
-# ライブラリインストール
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# ロック済みruntime依存をインストール
+COPY requirements.lock .
+RUN pip install --no-cache-dir -r requirements.lock
 
 # ソースコードをコピー
 COPY . .

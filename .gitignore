@@ -1,4 +1,6 @@
 .env
+.env.*
+!.env.example
 
 __pycache__/
 *.pyc
@@ -10,8 +12,11 @@ __pycache__/
 .terraform/
 *.tfstate
 *.tfstate.*
+terraform.tfstate.lock.info
+tfplan
 *.tfplan
 *.plan
+plan.out
 *.tfvars
 *.tfvars.json
 backend.hcl
