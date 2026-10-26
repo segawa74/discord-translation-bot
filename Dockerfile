@@ -1,5 +1,5 @@
 # 軽量なPythonイメージを使用
-FROM python:3.11-slim
+FROM python:3.15-slim
 
 # ビルドツールおよび音声・暗号化に必要なライブラリをインストール
 RUN apt-get update && \
