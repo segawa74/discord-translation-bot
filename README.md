@@ -68,9 +68,10 @@ docker compose up --build
 - 初回は`desired_count=0`で構築し、イメージとSSMパラメータ準備後に1へ
 - イメージは`linux/amd64`でECRへpush
 
-AWS構成図（draw.io）: [`docs/aws-architecture.drawio.svg`](docs/aws-architecture.drawio.svg)
-
 導入手順は `infra/terraform/bootstrap` と `infra/terraform/app` の `.example` を参照してください。
+
+### AWS構成図
+![AWS Architecture](docs/aws-architecture.drawio.svg)
 
 ## Development
 
