@@ -2,6 +2,8 @@
 
 Discordのボイスチャンネルで、テキストメッセージを翻訳して読み上げるBotです。言語の異なるフレンドとマルチプレイゲームをしながら会話するために開発しました。AWS ECS Fargate上で、Discord接続・翻訳・音声再生まで動作確認済みです。
 
+https://github.com/user-attachments/assets/dd7ded90-8f1c-41ee-b80f-74b0632a8aa6
+
 ## Features
 
 - `!join` でユーザーのVCに接続（デフォルト: 日本語）
