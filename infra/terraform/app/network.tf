@@ -98,3 +98,19 @@ resource "aws_vpc_security_group_egress_rule" "discord_voice" {
   to_port           = 65535
   cidr_ipv4         = "0.0.0.0/0"
 }
+
+# Discord does not publish a fixed voice websocket port range. The endpoint
+# is returned dynamically in VOICE_SERVER_UPDATE. Current Discord voice
+# endpoints resolve to Cloudflare, and the observed TLS ports are Cloudflare's
+# documented HTTPS ports. This is an infrastructure-based allowlist, not a
+# Discord API guarantee; revisit it if Discord changes voice providers.
+resource "aws_vpc_security_group_egress_rule" "discord_voice_websocket" {
+  for_each = toset(["2053", "2083", "2087", "2096", "8443"])
+
+  security_group_id = aws_security_group.bot.id
+  description       = "Discord voice websocket via Cloudflare HTTPS port ${each.value}."
+  ip_protocol       = "tcp"
+  from_port         = tonumber(each.value)
+  to_port           = tonumber(each.value)
+  cidr_ipv4         = "0.0.0.0/0"
+}
