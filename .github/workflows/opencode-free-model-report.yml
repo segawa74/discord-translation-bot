@@ -16,6 +16,7 @@ jobs:
     timeout-minutes: 15
     permissions:
       contents: read
+      id-token: write
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -89,9 +90,32 @@ jobs:
           sudo install -d -m 0755 /etc/opencode
           sudo install -m 0644 "$config" /etc/opencode/opencode.json
 
+      - name: Authenticate OpenCode with GitHub OIDC
+        env:
+          AUDIENCE: https://opencode.ai/console
+        run: |
+          set -euo pipefail
+          oidc="$(curl --fail --silent --show-error --connect-timeout 10 --max-time 30 \
+            --oauth2-bearer "$ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            --get --data-urlencode "audience=$AUDIENCE" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL" | jq -er '.value | strings | select(length > 0)')"
+          printf '::add-mask::%s\n' "$oidc"
+
+          token="$(curl --fail --silent --show-error --connect-timeout 10 --max-time 30 \
+            --data-urlencode 'grant_type=urn:ietf:params:oauth:grant-type:token-exchange' \
+            --data-urlencode 'subject_token_type=urn:ietf:params:oauth:token-type:jwt' \
+            --data-urlencode 'client_id=sk_d09211eb-443a-42b8-ad92-e8312c086a96' \
+            --data-urlencode "subject_token=$oidc" \
+            'https://opencode.ai/console/auth/oauth/token' | jq -er '.access_token | strings | select(length > 0)')"
+          printf '::add-mask::%s\n' "$token"
+          printf 'OPENCODE_API_KEY=%s\n' "$token" >> "$GITHUB_ENV"
+          unset oidc token
+
       - name: Run read-only report with the explicit free model
         env:
-          OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
+          # The OIDC bootstrap credential is only needed by the previous step.
+          ACTIONS_ID_TOKEN_REQUEST_URL: ""
+          ACTIONS_ID_TOKEN_REQUEST_TOKEN: ""
         run: |
           set -euo pipefail
           model='opencode/deepseek-v4.1-flash-free'
@@ -101,7 +125,7 @@ jobs:
             printf '%s\n' \
               '## OpenCode free-model report: not run' \
               '' \
-              'Add the OpenCode Console key as the repository Actions secret `OPENCODE_API_KEY`, then rerun. No model request was made.' \
+              'GitHub OIDC did not provide an OpenCode token. No model request was made.' \
               >> "$GITHUB_STEP_SUMMARY"
             exit 1
           fi
@@ -116,7 +140,7 @@ jobs:
             printf '%s\n' \
               '## OpenCode free-model report: not run' \
               '' \
-              'The exact free model `opencode/deepseek-v4.1-flash-free` is unavailable to this key. The workflow will not select a paid model.' \
+              'The exact free model `opencode/deepseek-v4.1-flash-free` is unavailable to this identity. The workflow will not select a paid model.' \
               >> "$GITHUB_STEP_SUMMARY"
             exit 1
           fi
